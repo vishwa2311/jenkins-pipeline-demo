@@ -1,0 +1,9 @@
+@echo off
+set "TARGET=%FOLDER%"
+echo Checking folder: %TARGET%
+if exist "%TARGET%" (
+    echo Folder exists: %TARGET%
+) else (
+    echo Folder not found. Creating: %TARGET%
+    mkdir "%TARGET%"
+)
