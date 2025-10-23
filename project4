@@ -1,9 +1,25 @@
-@echo off
-set "TARGET=%FOLDER%"
-echo Checking folder: %TARGET%
-if exist "%TARGET%" (
-    echo Folder exists: %TARGET%
-) else (
-    echo Folder not found. Creating: %TARGET%
-    mkdir "%TARGET%"
-)
+pipeline {
+    agent any
+    parameters {
+        string(name: 'FOLDER', defaultValue: 'C:\\Temp', description: 'Folder to check/create')
+    }
+    stages {
+        stage('Check Folder') {
+            steps {
+                bat """
+                @echo off
+                set "TARGET=${params.FOLDER}"
+                echo === Project 4: Check Folder ===
+                echo Checking folder: %TARGET%
+                if exist "%TARGET%" (
+                    echo Folder exists: %TARGET%
+                ) else (
+                    echo Folder not found. Creating: %TARGET%
+                    mkdir "%TARGET%"
+                )
+                echo Done.
+                """
+            }
+        }
+    }
+}
