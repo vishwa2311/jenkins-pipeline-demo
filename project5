@@ -1,0 +1,71 @@
+pipeline {
+    agent any
+    parameters {
+        choice(name: 'EXAMPLE', choices: ['All', 'Hello','SystemInfo','BuildVars','CheckFolder','CleanTemp'], description: 'Choose example (All = run all)')
+        string(name: 'FOLDER', defaultValue: 'C:\\Temp', description: 'Folder path for CheckFolder')
+        string(name: 'TARGET', defaultValue: 'C:\\Temp', description: 'Folder path for CleanTemp')
+        booleanParam(name: 'DO_DELETE', defaultValue: false, description: 'Actually delete files for CleanTemp')
+    }
+    stages {
+        stage('Run Example(s)') {
+            steps {
+                script {
+                    def runExample = { name ->
+                        switch(name) {
+                            case 'Hello':
+                                bat """@echo off
+                                echo === Example: Hello Jenkins ===
+                                echo Hello Jenkins!
+                                dir
+                                """
+                                break
+                            case 'SystemInfo':
+                                bat """@echo off
+                                echo === Example: System Info ===
+                                echo Computer Name: %COMPUTERNAME%
+                                echo User: %USERNAME%
+                                ver
+                                systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
+                                """
+                                break
+                            case 'BuildVars':
+                                bat """@echo off
+                                echo === Example: Jenkins Build Info ===
+                                echo Job: %JOB_NAME%
+                                echo Build: %BUILD_NUMBER%
+                                echo Workspace: %WORKSPACE%
+                                echo Date: %DATE% %TIME%
+                                """
+                                break
+                            case 'CheckFolder':
+                                bat """@echo off
+                                set "TARGET=${params.FOLDER}"
+                                echo === Check Folder ===
+                                if exist "%TARGET%" (echo Folder exists: %TARGET%) else (mkdir "%TARGET%" & echo Folder created)
+                                """
+                                break
+                            case 'CleanTemp':
+                                bat """@echo off
+                                echo === Preview .tmp files in %TARGET% ===
+                                if exist "%TARGET%" forfiles /p "%TARGET%" /m *.tmp /c "cmd /c echo @path"
+                                """
+                                if (params.DO_DELETE) {
+                                    bat """@echo off
+                                    echo === Deleting .tmp files in %TARGET% ===
+                                    forfiles /p "%TARGET%" /m *.tmp /c "cmd /c del @path"
+                                    """
+                                }
+                                break
+                        }
+                    }
+
+                    if (params.EXAMPLE == 'All') {
+                        ['Hello','SystemInfo','BuildVars','CheckFolder','CleanTemp'].each { runExample(it) }
+                    } else {
+                        runExample(params.EXAMPLE)
+                    }
+                }
+            }
+        }
+    }
+}
