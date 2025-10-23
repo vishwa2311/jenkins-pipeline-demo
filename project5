@@ -1,7 +1,7 @@
 pipeline {
     agent any
     parameters {
-        choice(name: 'EXAMPLE', choices: ['All', 'Hello','SystemInfo','BuildVars','CheckFolder','CleanTemp'], description: 'Choose example (All = run all)')
+        choice(name: 'EXAMPLE', choices: ['All','Hello','SystemInfo','BuildVars','CheckFolder','CleanTemp'], description: 'Choose which example to run')
         string(name: 'FOLDER', defaultValue: 'C:\\Temp', description: 'Folder path for CheckFolder')
         string(name: 'TARGET', defaultValue: 'C:\\Temp', description: 'Folder path for CleanTemp')
         booleanParam(name: 'DO_DELETE', defaultValue: false, description: 'Actually delete files for CleanTemp')
@@ -14,7 +14,7 @@ pipeline {
                         switch(name) {
                             case 'Hello':
                                 bat """@echo off
-                                echo === Example: Hello Jenkins ===
+                                echo === Example: Hello ===
                                 echo Hello Jenkins!
                                 dir
                                 """
@@ -40,13 +40,18 @@ pipeline {
                             case 'CheckFolder':
                                 bat """@echo off
                                 set "TARGET=${params.FOLDER}"
-                                echo === Check Folder ===
-                                if exist "%TARGET%" (echo Folder exists: %TARGET%) else (mkdir "%TARGET%" & echo Folder created)
+                                echo === Example: Check Folder ===
+                                if exist "%TARGET%" (
+                                    echo Folder exists: %TARGET%
+                                ) else (
+                                    mkdir "%TARGET%"
+                                    echo Folder created
+                                )
                                 """
                                 break
                             case 'CleanTemp':
                                 bat """@echo off
-                                echo === Preview .tmp files in %TARGET% ===
+                                echo === Example: Clean Temp Files (Preview) ===
                                 if exist "%TARGET%" forfiles /p "%TARGET%" /m *.tmp /c "cmd /c echo @path"
                                 """
                                 if (params.DO_DELETE) {
