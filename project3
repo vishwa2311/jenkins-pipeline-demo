@@ -1,0 +1,5 @@
+@echo off
+echo Job: %JOB_NAME%
+echo Build: %BUILD_NUMBER%
+echo Workspace: %WORKSPACE%
+echo Date: %DATE% %TIME%
