@@ -1,0 +1,6 @@
+@echo off
+echo === System Info ===
+echo Computer Name: %COMPUTERNAME%
+echo User: %USERNAME%
+ver
+systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
