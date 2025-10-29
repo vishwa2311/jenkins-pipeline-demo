@@ -19,10 +19,10 @@ pipeline {
               }
             }
           }
+
           if (!project1Changed) {
             echo "No changes under 'project1' — skipping build."
             currentBuild.result = 'NOT_BUILT'
-            // stop pipeline gracefully
             return
           } else {
             echo "project1 changed → continue"
@@ -33,19 +33,33 @@ pipeline {
 
     stage('Build (training)') {
       steps {
-        echo "Run simple build steps for training"
-        // example step
-        bat 'type project1\\README.md || echo project1 exists'
+        script {
+          // safer: list directory contents and only type a file if it exists
+          if (fileExists('project1/README.md')) {
+            if (isUnix()) {
+              sh 'ls -la project1 || true; cat project1/README.md'
+            } else {
+              bat 'dir project1 || echo dir failed'
+              bat 'if exist project1\\README.md ( type project1\\README.md ) else ( echo "project1\\README.md not found" )'
+            }
+          } else {
+            echo "project1/README.md not found — printing project1 contents instead"
+            if (isUnix()) {
+              sh 'ls -la project1 || true'
+            } else {
+              bat 'dir project1 || echo project1 folder not found'
+            }
+          }
+        }
       }
     }
 
     stage('Publish') {
-      steps {
-        echo "Publish / archive (optional for training)"
-      }
+      steps { echo "Publish stage (optional)" }
     }
-  } // pipeline stages
+  }
+
   post {
-    always { echo "Pipeline finished with status: ${currentBuild.currentResult}" }
+    always { echo "Pipeline finished — status: ${currentBuild.currentResult}" }
   }
 }
