@@ -1,12 +1,12 @@
-#pipeline {
+pipeline {
     agent any
     stages {
- #       stage('Hello') {
+      stage('Hello') {
             steps {
-  #              bat """
+               bat """
                 @echo off
-               e#cho === Project 1: Hello Jenkins ===
-                #echo Hello from Project 1!
+               echo === Project 1: Hello Jenkins ===
+                echo Hello from Project 1!
                 dir
                 """
             }
