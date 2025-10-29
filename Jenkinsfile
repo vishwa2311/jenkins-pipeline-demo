@@ -5,7 +5,7 @@ pipeline {
       steps { checkout scm }
     }
 
-    stage('Detect project1 changes') {
+    #stage('Detect project1 changes') {
       steps {
         script {
           boolean project1Changed = false
